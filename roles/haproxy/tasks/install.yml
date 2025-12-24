@@ -1,0 +1,12 @@
+---
+- name: Create HAProxy base directory
+  file:
+    path: "{{ haproxy_base_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Create HAProxy config directory
+  file:
+    path: "{{ haproxy_base_dir }}/conf"
+    state: directory
+    mode: "0755"

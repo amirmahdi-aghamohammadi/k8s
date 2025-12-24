@@ -1,0 +1,15 @@
+haproxy_image: haproxy:latest
+haproxy_container_name: haproxy
+
+haproxy_user: haproxy
+haproxy_group: haproxy
+
+haproxy_maxconn: 2000
+
+haproxy_timeouts:
+  connect: 5000ms
+  client: 50000ms
+  server: 50000ms
+
+haproxy_mode: tcp
+haproxy_balance: roundrobin

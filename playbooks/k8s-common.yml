@@ -1,0 +1,7 @@
+---
+- name: Kubernetes common prerequisites
+  hosts: kubernetes
+  become: true
+  roles:
+    - k8s-common
+

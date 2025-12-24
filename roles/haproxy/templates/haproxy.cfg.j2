@@ -1,0 +1,26 @@
+global
+    log stdout format raw local0
+    maxconn {{ haproxy_maxconn }}
+    user {{ haproxy_user }}
+    group {{ haproxy_group }}
+
+defaults
+    log global
+    mode {{ haproxy_mode }}
+    option tcplog
+    option dontlognull
+    retries 3
+    timeout connect {{ haproxy_timeouts.connect }}
+    timeout client  {{ haproxy_timeouts.client }}
+    timeout server  {{ haproxy_timeouts.server }}
+
+frontend kubernetes-frontend
+    bind *:{{ kubernetes_api_port }}
+    default_backend kubernetes-backend
+
+backend kubernetes-backend
+    balance {{ haproxy_balance }}
+    option tcp-check
+{% for host in groups['kube_masters'] %}
+    server {{ host }} {{ hostvars[host].ansible_host }}:{{ kubernetes_api_port }} check fall 3 rise 2
+{% endfor %}

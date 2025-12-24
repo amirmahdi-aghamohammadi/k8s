@@ -1,0 +1,7 @@
+---
+- import_tasks: kernel.yml
+- import_tasks: sysctl.yml
+- import_tasks: swap.yml
+- import_tasks: packages.yml
+- import_tasks: crio.yml
+- import_tasks: kubernetes.yml

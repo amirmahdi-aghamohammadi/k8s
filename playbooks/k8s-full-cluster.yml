@@ -1,0 +1,81 @@
+---
+############################################
+# 1. Common SNI config on all hosts
+############################################
+- name: Apply SNI configuration on all hosts
+  hosts: all
+  become: true
+  roles:
+    - sni-config
+
+############################################
+# 2. Docker on HAProxy node
+############################################
+- name: Install Docker on HAProxy node
+  hosts: haproxy
+  become: true
+  roles:
+    - docker
+
+############################################
+# 3. Deploy HAProxy
+############################################
+- name: Deploy HAProxy
+  hosts: haproxy
+  become: true
+  roles:
+    - haproxy
+
+############################################
+# 4. Kubernetes common prerequisites
+############################################
+- name: Kubernetes common setup on all cluster nodes
+  hosts: kubernetes
+  become: true
+  roles:
+    - k8s-common
+
+############################################
+# 5. Init first Kubernetes control plane
+############################################
+- name: Initialize first control plane
+  hosts: kube_masters[0]
+  become: true
+  roles:
+    - k8s-control-plane-init
+
+############################################
+# 6. Join other control planes
+############################################
+- name: Join other control plane nodes
+  hosts: kube_masters
+  become: true
+  roles:
+    - k8s-control-plane-join
+
+############################################
+# 7. Join worker nodes
+############################################
+- name: Join worker nodes to cluster
+  hosts: kube_workers
+  become: true
+  roles:
+    - k8s-worker-join
+
+############################################
+# 8. Configure kubeconfig on all masters
+############################################
+- name: Configure kubeconfig on control plane nodes
+  hosts: kube_masters
+  become: true
+  roles:
+    - k8s-kubeconfig
+
+############################################
+# 9. Install CNI (Calico)
+############################################
+- name: Install Calico CNI
+  hosts: kube_masters[0]
+  become: true
+  roles:
+    - k8s-cni-calico

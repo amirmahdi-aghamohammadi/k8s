@@ -1,0 +1,8 @@
+---
+- name: Ensure DNS nameservers are present in resolv.conf
+  lineinfile:
+    path: /etc/resolv.conf
+    line: "nameserver {{ item }}"
+    state: present
+    create: yes
+  loop: "{{ dns_nameservers }}"

@@ -1,0 +1,11 @@
+version: "3.3"
+
+services:
+  haproxy:
+    image: {{ haproxy_image }}
+    container_name: {{ haproxy_container_name }}
+    network_mode: host
+    user: root
+    volumes:
+      - ./conf/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    restart: unless-stopped

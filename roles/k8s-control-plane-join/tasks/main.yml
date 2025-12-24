@@ -1,0 +1,11 @@
+---
+- name: Check if node already joined
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_conf
+
+- name: Join control plane
+  command: "{{ hostvars[groups['kube_masters'][0]].k8s_master_join_command }}"
+  when:
+    - not kubelet_conf.stat.exists
+    - inventory_hostname != groups['kube_masters'][0]

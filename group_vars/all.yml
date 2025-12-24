@@ -1,0 +1,19 @@
+---
+haproxy_base_dir: /root/haproxy
+kubernetes_api_port: 6443
+
+kubernetes_version: "1.28"
+crictl_version: "v1.28.0"
+
+# Cluster
+kubernetes_cluster_name: i4d.ir
+kubernetes_cluster_domain: k8s.i4d.ir
+
+# Networking
+kubernetes_pod_cidr: 192.168.0.0/16
+
+# API
+kubernetes_api_port: 6443
+
+# kubeadm
+kubeadm_verbose_level: 5

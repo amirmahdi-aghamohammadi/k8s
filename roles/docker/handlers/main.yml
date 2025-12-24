@@ -1,0 +1,6 @@
+---
+- name: Restart Docker
+  ansible.builtin.service:
+    name: docker
+    state: restarted
+  when: not (docker_container_exist | default(false)) | bool

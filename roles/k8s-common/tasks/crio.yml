@@ -1,0 +1,30 @@
+---
+- name: Create apt keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Add CRI-O GPG key
+  get_url:
+    url: https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/deb/Release.key
+    dest: /etc/apt/keyrings/cri-o-apt-keyring.gpg
+    mode: "0644"
+
+- name: Add CRI-O repository
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/deb/ /"
+    filename: cri-o
+
+- name: Install CRI-O
+  apt:
+    name: "{{ crio_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Enable and start CRI-O
+  systemd:
+    name: crio
+    enabled: yes
+    state: started
+

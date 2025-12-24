@@ -1,0 +1,6 @@
+---
+- name: Run HAProxy using docker compose
+  command: docker compose up -d
+  args:
+    chdir: "{{ haproxy_base_dir }}"
+

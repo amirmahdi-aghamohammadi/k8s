@@ -1,0 +1,14 @@
+---
+- name: Load kernel modules for Kubernetes
+  copy:
+    dest: /etc/modules-load.d/k8s.conf
+    content: |
+      {% for m in k8s_kernel_modules %}
+      {{ m }}
+      {% endfor %}
+
+- name: Ensure kernel modules are loaded
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ k8s_kernel_modules }}"

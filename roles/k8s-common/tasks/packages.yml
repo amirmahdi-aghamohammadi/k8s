@@ -1,0 +1,9 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install required base packages
+  apt:
+    name: "{{ k8s_required_packages }}"
+    state: present

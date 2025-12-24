@@ -1,0 +1,5 @@
+---
+calico_manifest_url: https://docs.projectcalico.org/manifests/calico.yaml
+calico_namespace: kube-system
+calico_node_label: k8s-app=calico-node
+
