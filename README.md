@@ -14,7 +14,7 @@ The goal is to deliver a **production-ready Kubernetes cluster** from scratch wi
 
 ## Architecture Overview
 
-![Kubernetes HA Diagram](img/k8s.svg)
+   ![Kubernetes HA Diagram](img/k8s.svg)
 
 ## Prerequisites
 
