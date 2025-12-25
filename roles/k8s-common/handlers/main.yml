@@ -1,3 +1,8 @@
 ---
 - name: reload sysctl
   command: sysctl --system
+
+- name: restart crio
+  systemd:
+    name: crio
+    state: restarted

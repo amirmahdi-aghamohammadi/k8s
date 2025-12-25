@@ -1,15 +1,14 @@
 ---
 - name: Check if Calico is already installed
-  command: kubectl get daemonset calico-node -n {{ calico_namespace }}
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
+  command: kubectl --kubeconfig /etc/kubernetes/admin.conf get daemonset calico-node -n {{ calico_namespace }}
   register: calico_check
   failed_when: false
   changed_when: false
 
 - name: Install Calico CNI
-  command: kubectl apply -f {{ calico_manifest_url }}
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
+  command: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f {{ calico_manifest_url }}
   when: calico_check.rc != 0
 
+- name: "Wait for node to become Ready after CNI installation"
+  command: kubectl --kubeconfig /etc/kubernetes/admin.conf wait --for=condition=Ready node/{{ inventory_hostname }} --timeout=300s
+  when: calico_check.rc != 0

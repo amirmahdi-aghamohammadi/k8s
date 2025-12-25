@@ -1,0 +1,56 @@
+---
+- name: Set crio and crictl versions
+  set_fact:
+    crio_version_repo: "prerelease:/main"
+    crictl_version: "v1.28.0"
+
+- name: Create apt keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Add official Kubernetes CRI-O GPG key
+  shell: |
+    curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/{{ crio_version_repo }}/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
+  args:
+    creates: /etc/apt/keyrings/cri-o-apt-keyring.gpg
+
+- name: Add official Kubernetes CRI-O repository
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://pkgs.k8s.io/addons:/cri-o:/{{ crio_version_repo }}/deb/ /"
+    filename: cri-o
+    state: present
+    update_cache: no
+
+- name: Force apt to use IPv4 to fix network issues
+  copy:
+    content: 'Acquire::ForceIPv4 "true";'
+    dest: /etc/apt/apt.conf.d/99force-ipv4
+    mode: "0644"
+
+- name: Update apt cache with IPv4 fix
+  apt:
+    update_cache: yes
+    lock_timeout: 300
+
+- name: Install CRI-O package
+  apt:
+    name: cri-o
+    state: present
+    lock_timeout: 300
+
+- name: Enable and start CRI-O service
+  systemd:
+    name: crio
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+- name: Install crictl (CRI tools)
+  unarchive:
+    src: "https://github.com/kubernetes-sigs/cri-tools/releases/download/{{ crictl_version }}/crictl-{{ crictl_version }}-linux-amd64.tar.gz"
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: "0755"
+    creates: /usr/local/bin/crictl

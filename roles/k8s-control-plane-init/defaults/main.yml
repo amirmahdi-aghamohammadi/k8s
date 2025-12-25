@@ -1,2 +1,16 @@
 ---
+# Default values for the control plane initialization.
+# These values can be overridden in your group_vars/all.yml file.
+
+# Path to the admin kubeconfig file
 kubeconfig_path: /etc/kubernetes/admin.conf
+
+# Network CIDR for the pods
+kubernetes_pod_cidr: "192.168.0.0/16" # مقدار پیش‌فرض از فایل group_vars شما
+
+# Control plane endpoint domain and port
+kubernetes_cluster_domain: "k8s.i4d.ir"   # مقدار پیش‌فرض از فایل group_vars شما
+kubernetes_api_port: 6443                 # مقدار پیش‌فرض از فایل group_vars شما
+
+# Verbosity level for kubeadm commands
+kubeadm_verbose_level: 5                  # مقدار پیش‌فرض از فایل group_vars شما

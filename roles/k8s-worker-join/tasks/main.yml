@@ -5,6 +5,5 @@
   register: kubelet_conf
 
 - name: Join worker node
-  command: "{{ hostvars[groups['kube_masters'][0]].k8s_worker_join_command }}"
+  shell: "{{ hostvars[groups['kube_masters'][0]].k8s_worker_join_command }}"
   when: not kubelet_conf.stat.exists
-

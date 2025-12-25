@@ -1,4 +1,12 @@
 ---
+# Kubernetes version
+kubernetes_version: "1.28"
+
+# CRI-O and Crictl versions (already used in crio.yml)
+crio_version_repo: "prerelease:/main"
+crictl_version: "v1.28.0"
+
+# Kernel modules for Kubernetes
 k8s_kernel_modules:
   - overlay
   - br_netfilter
@@ -13,23 +21,3 @@ k8s_required_packages:
   - curl
   - apt-transport-https
   - ca-certificates
-
-crio_packages:
-  - cri-o
-k8s_kernel_modules:
-  - overlay
-  - br_netfilter
-
-k8s_sysctl_params:
-  net.bridge.bridge-nf-call-iptables: 1
-  net.bridge.bridge-nf-call-ip6tables: 1
-  net.ipv4.ip_forward: 1
-
-k8s_required_packages:
-  - software-properties-common
-  - curl
-  - apt-transport-https
-  - ca-certificates
-
-crio_packages:
-  - cri-o

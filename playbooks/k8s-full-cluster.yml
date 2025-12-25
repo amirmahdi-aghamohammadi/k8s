@@ -74,8 +74,8 @@
 ############################################
 # 9. Install CNI (Calico)
 ############################################
-- name: Install Calico CNI
-  hosts: kube_masters[0]
-  become: true
-  roles:
-    - k8s-cni-calico
+#- name: Install Calico CNI
+#  hosts: kube_masters[0]
+#  become: true
+#  roles:
+#    - k8s-cni-calico

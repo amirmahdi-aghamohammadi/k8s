@@ -10,25 +10,45 @@
     --pod-network-cidr={{ kubernetes_pod_cidr }}
     --control-plane-endpoint {{ kubernetes_cluster_domain }}:{{ kubernetes_api_port }}
     --upload-certs
-    --v={{ kubeadm_verbose_level }}
   when: not kubeadm_init_check.stat.exists
   register: kubeadm_init_output
 
-- name: Extract join command for control-plane
-  shell: |
-    echo "{{ kubeadm_init_output.stdout }}" | \
-    sed -n '/kubeadm join/,/certificate-key/p'
-  register: master_join_cmd
-  when: kubeadm_init_output is defined
+- name: "Finalize master1: Setup kubeconfig, Install CNI, and wait for readiness"
+  block:
+    - name: "Create .kube directory for root user"
+      file:
+        path: /root/.kube
+        state: directory
+        mode: '0755'
 
-- name: Extract join command for workers
-  shell: |
-    echo "{{ kubeadm_init_output.stdout }}" | \
-    sed -n '/kubeadm join/,/discovery-token-ca-cert-hash/p' | head -n 3
-  register: worker_join_cmd
-  when: kubeadm_init_output is defined
+    - name: "Copy admin.conf to make kubectl work for root"
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /root/.kube/config
+        remote_src: yes
+        owner: root
+        group: root
+        mode: '0600'
 
-- name: Save join commands as facts
-  set_fact:
-    k8s_master_join_command: "{{ master_join_cmd.stdout | trim }}"
-    k8s_worker_join_command: "{{ worker_join_cmd.stdout | trim }}"
+    - name: "Install Calico CNI network plugin"
+      command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+    - name: "Wait for node to become Ready after CNI installation"
+      command: kubectl wait --for=condition=Ready node/{{ inventory_hostname }} --timeout=300s
+  when: kubeadm_init_output.changed
+
+- name: "Generate and save cluster join commands"
+  block:
+    - name: "Generate a new worker join command"
+      command: kubeadm token create --print-join-command
+      register: worker_join_command_result
+
+    - name: "Get a new certificate key for control plane nodes"
+      command: kubeadm init phase upload-certs --upload-certs
+      register: upload_certs_result
+
+    - name: "Save the join commands as facts for other nodes"
+      set_fact:
+        cacheable: yes # این کلید، برای در دسترس قرار دادن متغیر در playهای بعدی حیاتی است
+        k8s_worker_join_command: "{{ worker_join_command_result.stdout }}"
+        k8s_master_join_command: "{{ worker_join_command_result.stdout }} --control-plane --certificate-key {{ upload_certs_result.stdout_lines[-1] }}"
