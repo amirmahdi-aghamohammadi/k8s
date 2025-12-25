@@ -6,8 +6,8 @@ kubernetes_version: "1.28"
 crictl_version: "v1.28.0"
 
 # Cluster
-kubernetes_cluster_name: i4d.ir
-kubernetes_cluster_domain: k8s.i4d.ir
+kubernetes_cluster_name: k8s
+kubernetes_cluster_domain: haproxy_DOMAIN
 
 # Networking
 kubernetes_pod_cidr: 192.168.0.0/16
