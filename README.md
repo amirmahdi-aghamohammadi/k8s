@@ -16,7 +16,7 @@ The goal is to deliver a **production-ready Kubernetes cluster** from scratch wi
 
    ![Kubernetes HA Diagram](img/k8s.svg)
 
-## Prerequisites
+### Prerequisites
 
 Make sure your environment meets the following requirements:
 
@@ -75,8 +75,6 @@ kube_masters
 kube_workers
 ```
 
----
-
 ## Global Variables
 
 Customize cluster-wide settings in:
@@ -91,8 +89,6 @@ Common configurations include:
 * Kubernetes API port
 * Pod network CIDR
 * Kubernetes version
-
----
 
 ## Installation
 
@@ -119,7 +115,6 @@ ansible-playbook -i inventory/hosts.ini playbooks/k8s-full-cluster.yml
 7. Joins worker nodes
 8. Distributes `admin.conf` to all master nodes
 
----
 
 ## Roles Overview
 
@@ -135,7 +130,6 @@ ansible-playbook -i inventory/hosts.ini playbooks/k8s-full-cluster.yml
 | `k8s-worker-join`        | Joins worker nodes                              |
 | `k8s-kubeconfig`         | Distributes admin kubeconfig                    |
 
----
 
 ## Repository Structure
 
@@ -165,13 +159,10 @@ ansible-playbook -i inventory/hosts.ini playbooks/k8s-full-cluster.yml
     └── sni-config/
 ```
 
----
-
 ## Notes
 
 * This project assumes **fresh nodes** with no existing Kubernetes installation.
 * Re-running the playbook on a partially configured cluster may require cleanup.
 * Always review variables before deployment in production.
 
----
 
