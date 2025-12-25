@@ -13,14 +13,8 @@
   when: not kubeadm_init_check.stat.exists
   register: kubeadm_init_output
 
-- name: "Finalize master1: Setup kubeconfig, Install CNI, and wait for readiness"
+- name: "Finalize master1: Grant anonymous access, install CNI, and wait"
   block:
-    - name: "Create .kube directory for root user"
-      file:
-        path: /root/.kube
-        state: directory
-        mode: '0755'
-
     - name: "Copy admin.conf to make kubectl work for root"
       copy:
         src: /etc/kubernetes/admin.conf
@@ -29,6 +23,13 @@
         owner: root
         group: root
         mode: '0600'
+
+    - name: "Allow anonymous users to access cluster-info ConfigMap"
+      command: >
+        kubectl create clusterrolebinding
+        kubeadm:cluster-info
+        --clusterrole=kube-public-cluster-info-viewer
+        --group=system:unauthenticated,system:authenticated
 
     - name: "Install Calico CNI network plugin"
       command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
@@ -49,6 +50,6 @@
 
     - name: "Save the join commands as facts for other nodes"
       set_fact:
-        cacheable: yes # این کلید، برای در دسترس قرار دادن متغیر در playهای بعدی حیاتی است
+        cacheable: yes
         k8s_worker_join_command: "{{ worker_join_command_result.stdout }}"
         k8s_master_join_command: "{{ worker_join_command_result.stdout }} --control-plane --certificate-key {{ upload_certs_result.stdout_lines[-1] }}"
